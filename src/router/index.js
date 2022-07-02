@@ -1,20 +1,41 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-
+import HomeView from '../views/WelcomeView.vue'
+import {isloggedIn} from '@/composables/auth_service'
+ 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    component: HomeView,
+    children: [
+      {
+        path: '',
+        name: 'Dashboard',
+        component: () => import('../views/DashboardView.vue'),
+        props: true,
+      }
+    ],
+    beforeEnter(to, from, next) {
+       if(!isloggedIn()) {
+          next('/login')
+       }
+       else {
+          next();
+       }
+    }
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/auth/LoginView.vue'),
+    beforeEnter(to, from, next) {
+      if(isloggedIn) {
+        next();
+      }
+      else {
+        next('/login');
+      }
+    }
+  },
 ]
 
 const router = createRouter({
