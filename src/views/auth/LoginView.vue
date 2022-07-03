@@ -64,19 +64,20 @@ export default defineComponent({
             await store.dispatch('loginUser', user.value).then(() => {
                 router.push('/')
             }).catch(errs => {
-                switch (errs.response.status) {
-                    case 422:
-                        errors.value = errs.response.data.errors
-                        break;
-                    case 401:
-                        errors.value = errs.response.data.errors
-                        break;
-                    case 500:
-                        errors.value = errs.response.data.message
-                        break;
-                    default:
-                        break;
-                    }
+                // switch (errs.response.status) {
+                //     case 422:
+                //         errors.value = errs.response.data.errors
+                //         break;
+                //     case 401:
+                //         errors.value = errs.response.data.errors
+                //         break;
+                //     case 500:
+                //         errors.value = errs.response.data.message
+                //         break;
+                //     default:
+                //         break;
+                //     }
+                console.log(errs)
             })
             if(!errors.value) {
                 document.body.style.backgroundImage = "";

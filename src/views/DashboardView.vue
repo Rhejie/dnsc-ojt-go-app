@@ -2,7 +2,7 @@
     <div class="">
         <!-- Header -->
         <div class="h-48 bg-gradient-to-r from-emerald-500 to-green-500">
-            <img class=" w-full object-cover lg:h-48" src="@/assets/bg-1.webp" alt="" />
+            <img class="h-48 w-full object-cover lg:h-48" src="@/assets/bg-1.webp" alt="" />
         </div>
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
@@ -49,9 +49,11 @@
     </div>
 </template>
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted } from 'vue'
 import { ref } from 'vue'
 import { MailIcon, PhoneIcon } from '@heroicons/vue/solid'
+import {accessToken} from '@/composables/auth_service'
+import {setActiveNav} from '@/composables/setActiveNavigation'
 
 export default defineComponent({
     name: 'DashboardView',
@@ -65,6 +67,11 @@ export default defineComponent({
         const handleClick = (tab, event) => {
             console.log(tab, event)
         }
+
+        onMounted(() => {
+            setActiveNav('Dashboard')
+        })
+        console.log('tokensss -->',accessToken())
         return {
             handleClick,
             activeName,

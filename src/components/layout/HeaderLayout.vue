@@ -19,7 +19,7 @@
                                     placeholder="Search" type="search" name="search" />
                             </div>
                         </form> -->
-                <!-- <p class="text-md text-semibold text-gray-100 my-auto">Logged in as </p> -->
+                <p class="text-md text-semibold text-gray-100 my-auto">Logged in as {{user.email}}</p>
             </div>
             <div class="ml-4 flex items-center md:ml-6">
                 <button type="button"
@@ -45,7 +45,7 @@
                         <MenuItems
                             class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                             <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
-                            <a :href="item.href"
+                            <a :href="item.href" @click="handleClickUserNavigation(item)"
                                 :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">{{
                                         item.name
                                 }}</a>
@@ -69,9 +69,12 @@ import {
     BellIcon,
     MenuAlt2Icon,
 } from '@heroicons/vue/outline'
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import {useEmitter} from '@/composables/useEmitter'
+import { computed } from '@vue/reactivity'
+import { logout } from '@/composables/auth_service'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
     name: 'HeaderLayout',
@@ -87,21 +90,34 @@ export default defineComponent({
 
         const store = useStore();
         const emitter = useEmitter;
+        const router = useRouter();
         const userNavigation = [
             { name: 'Your Profile', href: '#' },
             { name: 'Settings', href: '#' },
             { name: 'Sign out', href: '#' },
         ]
-        const user = ref(store.state.userProfile)
+
+        const user = computed(() => store.state.userProfile)
 
         const handleClick = () => {
             emitter.emit('CLOSE_SIDEBAR', true)
         }
 
+        const handleClickUserNavigation = async (item) => {
+            if(item.name === 'Sign out') {
+                await logout().then(res => {
+                    if(res.data) {
+                        router.push({name: 'Login'})
+                    }
+                })
+            }
+        }
+
         return { 
             userNavigation,
             user,
-            handleClick
+            handleClick,
+            handleClickUserNavigation
         }
     },
 })
