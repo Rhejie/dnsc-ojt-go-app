@@ -52,7 +52,6 @@
 import { defineComponent, onMounted } from 'vue'
 import { ref } from 'vue'
 import { MailIcon, PhoneIcon } from '@heroicons/vue/solid'
-import {accessToken} from '@/composables/auth_service'
 import {setActiveNav} from '@/composables/setActiveNavigation'
 
 export default defineComponent({
@@ -71,7 +70,7 @@ export default defineComponent({
         onMounted(() => {
             setActiveNav('Dashboard')
         })
-        console.log('tokensss -->',accessToken())
+        
         return {
             handleClick,
             activeName,

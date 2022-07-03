@@ -1,8 +1,8 @@
 <template> 
-    <div class="px-5 pt-2 pb-5 shadow-md">
+    <div class="px-5 pt-2 bg-green-100 pb-5 shadow-md">
         <div>
             <nav class="sm:hidden" aria-label="Back">
-                <a href="#" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+                <a href="#"  @click="handleClickBack" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
                     <ChevronLeftIcon class="flex-shrink-0 -ml-1 mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
                     Back
                 </a>
@@ -71,7 +71,7 @@
 import { setActiveNav } from "@/composables/setActiveNavigation";
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@heroicons/vue/solid'
 import { defineComponent, onMounted } from "vue";
-import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
     export default defineComponent({
         name: 'CoursesView',
@@ -81,18 +81,22 @@ import { useStore } from "vuex";
             PlusIcon
         },
         setup() {
-            const store = useStore();
+            const router = useRouter();
 
             const handleClickNewCourse = () => {
-                store.push({name: 'Create Course'})
+                router.push({name: 'Create Course'})
             }
+            const handleClickBack = () => {
+                router.go(-1)
+            } 
             
             onMounted(() => {
                 setActiveNav('Courses')
             });
 
             return {
-                handleClickNewCourse
+                handleClickNewCourse,
+                handleClickBack
             }
         }
     })

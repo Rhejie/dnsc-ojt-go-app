@@ -1,5 +1,5 @@
 <template>
-    <div class="px-5 pt-2">
+    <div class="px-5 bg-green-100  pb-5  shadow-md pt-2">
         <div>
             <nav class="sm:hidden" aria-label="Back">
                 <a href="#" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
@@ -142,8 +142,11 @@
                                     </div>
                                 </div>
                                 <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                                    <button type="button"
+                                        @click="handleClickCancel"
+                                        class="bg-indigo-600 mr-2 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</button>
                                     <button type="submit"
-                                        class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
+                                        class="bg-emerald-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">Save</button>
                                 </div>
                             </div>
                         </form>
@@ -159,6 +162,7 @@ import { getRoles } from "@/composables/admin_data";
 import { setActiveNav } from "@/composables/setActiveNavigation";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { defineComponent, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
     name: 'CreateUserView',
@@ -171,8 +175,15 @@ export default defineComponent({
     },
     setup() {
         
+        const router = useRouter()
+
         const {loadingRoles, loadRoles, roles} = getRoles();
+        
         loadRoles();
+        
+        const handleClickCancel = () => {
+            router.go(-1)
+        }
 
         onMounted( () => {
             setActiveNav('Users')
@@ -180,7 +191,8 @@ export default defineComponent({
 
         return {
             roles,
-            loadingRoles
+            loadingRoles,
+            handleClickCancel
         }
     }
 });

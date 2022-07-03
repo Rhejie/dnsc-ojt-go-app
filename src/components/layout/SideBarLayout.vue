@@ -12,7 +12,7 @@
                     enter-from="-translate-x-full" enter-to="translate-x-0"
                     leave="transition ease-in-out duration-300 transform" leave-from="translate-x-0"
                     leave-to="-translate-x-full">
-                    <dialog-panel class="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-emerald-700">
+                    <dialog-panel class="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-emerald-700 bg-gradient-to-r bg-teal-800 bg-emerald-600">
                         <TransitionChild as="template" enter="ease-in-out duration-300" enter-from="opacity-0"
                             enter-to="opacity-100" leave="ease-in-out duration-300" leave-from="opacity-100"
                             leave-to="opacity-0">
@@ -33,9 +33,9 @@
                             <nav class="px-2 space-y-1">
                                 <router-link v-for="item in navigation" 
                                     @click="handClick"
-                                    :class="[item.current ? 'bg-green-900 text-white' : 'text-grey-800 hover:text-white hover:bg-green-800', 'group flex items-center px-2 py-2 text-base font-medium rounded-md']"
+                                    :class="[item.current ? 'bg-green-900 text-white' : 'text-white hover:text-white hover:bg-green-800', 'group flex items-center px-2 py-2 text-base font-medium rounded-md']"
                                     :key="item.name" :to="item.href">
-                                    <component :is="item.icon" class="mr-4 flex-shrink-0 h-6 w-6 text-indigo-300"
+                                    <component :is="item.icon" class="mr-4 flex-shrink-0 h-6 w-6 text-white"
                                         aria-hidden="true" />
                                     {{ item.name }}
                                 </router-link>
