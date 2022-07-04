@@ -12,10 +12,7 @@ export default defineComponent({
       const store = useStore();
       onMounted( async () => {
         if(isloggedIn()) {
-          console.log("adsdsd")
-          await store.dispatch('getUserProfile').then(res => {
-            console.log('get profile -->' , res)
-          });
+          await store.dispatch('getUserProfile');
         }
       })
     }

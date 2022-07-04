@@ -49,7 +49,7 @@
                 <!-- Replace with your content -->
                 <div class="py-4">
                     <div class=" shadow-xl rounded-lg">
-                        <form action="#" method="POST">
+                        <form @submit.prevent="handleSubmit">
                             <div class="shadow sm:rounded-md sm:overflow-hidden">
                                 <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
                                     <div>
@@ -61,7 +61,7 @@
                                         <div class="col-span-6">
                                             <label for="Role"
                                                 class="block text-sm font-medium text-gray-700">Institute</label>
-                                            <select id="country" name="country" autocomplete="country-name"
+                                            <select id="country" v-model="course.institute_id" name="country" autocomplete="country-name"
                                                 class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                                 <option v-for="ins in institutes" :key="ins.id" :value="ins.id">{{ins.name}} - {{ins.abbreviation}}</option>
                                             </select>
@@ -69,7 +69,7 @@
                                         <div class="col-span-6 sm:col-span-6">
                                             <label for="name"
                                                 class="block text-sm font-medium text-gray-700">Name</label>
-                                            <input type="text" name="first-name" id="first-name"
+                                            <input type="text" v-model="course.name" name="first-name" id="first-name"
                                                 autocomplete="given-name"
                                                 placeholder="Institute Name..."
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
@@ -77,7 +77,7 @@
 
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="last-name" class="block text-sm font-medium text-gray-700">Abbreviation</label>
-                                            <input type="text" name="last-name" id="last-name"
+                                            <input type="text" v-model="course.abbreviation" name="last-name" id="last-name"
                                                 placeholder="Institute Abbreviation..."
                                                 autocomplete="family-name"
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
@@ -100,10 +100,11 @@
 </template>
 <script>
 import { setActiveNav } from "@/composables/setActiveNavigation";
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
 import { getInstitutes } from "@/composables/admin_data";
+import { storeCourse } from "@/composables/settings/courses_service";
 
 export default defineComponent({
     name: 'CreateInstitute',
@@ -115,12 +116,31 @@ export default defineComponent({
         
         const router = useRouter()
 
+        const course = ref({
+            institute_id: '',
+            name: '',
+            abbreviation: ''
+        })
+
+        const errorCourses = ref({})
+
         const handleClickCancel = () => {
             router.go(-1)
         }
 
         const {loadInstitutes, loadingInstitutes, institutes} = getInstitutes()
         loadInstitutes()
+
+        const handleSubmit = async () => {
+            
+            const {response, loadingCourse, errorCourse} = await storeCourse(course.value)
+            if(response.value && !loadingCourse.value) {
+                router.push('/courses')
+            }
+            
+            errorCourses.value = errorCourse.value
+        }
+
         onMounted(() => {
             setActiveNav('Courses')
         });
@@ -128,7 +148,10 @@ export default defineComponent({
         return {
             handleClickCancel,
             loadingInstitutes,
-            institutes
+            institutes,
+            course,
+            handleSubmit,
+            errorCourses
         }
     }
 })

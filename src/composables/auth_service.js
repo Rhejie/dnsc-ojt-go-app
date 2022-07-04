@@ -40,7 +40,6 @@ export const accessToken = () => {
     const t = localStorage.getItem('dnsc');
     if(!t) return null;
     const token = JSON.parse(localStorage.getItem('dnsc') || '');
-    console.log('token data ---->', token.access_token)
     if(!token) {
         return ''
     }

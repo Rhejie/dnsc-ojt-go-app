@@ -12,8 +12,8 @@ import {
 export default createStore({
   state: {
     isLoggedIn: false,
-    apiURL: 'http://127.0.0.1:8000/api',
-    serverPath: 'http://127.0.0.1:8000',
+    apiURL: 'http://dnsc-ojt-go.test/api',
+    serverPath: 'http://dnsc-ojt-go.test',
     userProfile: {},
     sideBarNavigation: [
       { name: 'Dashboard', href: '/', icon: HomeIcon, current: false },
@@ -50,7 +50,6 @@ export default createStore({
     },
     async getUserProfile(context) {
       await getProfile().then(res => {
-        console.log('user profile -->', res.data)
         context.commit('setUserPorfile', res.data)
       }).catch(error => {
         if (error) {

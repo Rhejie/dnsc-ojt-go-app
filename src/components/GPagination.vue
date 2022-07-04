@@ -25,7 +25,7 @@ export default defineComponent({
         const page_sizes = ref([10, 25, 50, 100, 200])
 
         const total = computed(() => props.current_size)
-
+        
         const handleSizeChange = (val) => {
             console.log(`${val} items per page`)
             emitter.emit('CHANGE_SIZE', val)
@@ -35,8 +35,6 @@ export default defineComponent({
         }
 
         onMounted(() => {
-            console.log('current_size ',props.current_size);
-            // total.value = props.current_size;
             currentPage1.value = props.current_page
         })
 
