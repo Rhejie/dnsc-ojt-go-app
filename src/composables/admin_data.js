@@ -21,3 +21,22 @@ export const getRoles = () => {
         roles
     }
 }
+
+export const getInstitutes = () => {
+    const loadingInstitutes = ref(false);
+    const institutes = ref([])
+
+    const loadInstitutes = async () => {
+        loadingInstitutes.value = true;
+        await http().get('/user/setting/get-institutes').then(res => {
+            institutes.value = res.data
+            loadingInstitutes.value = false;
+        })
+    }
+
+    return {
+        loadingInstitutes,
+        institutes,
+        loadInstitutes
+    }
+}

@@ -52,22 +52,7 @@
             <div class="max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
                 <!-- Replace with your content -->
                 <div class="py-4">
-                    <div v-if="loadingInstitute" class="shadow-md h-96 rounded-md p-4 w-full mx-auto">
-                        <div class="animate-pulse flex space-x-4">
-                            <div class="rounded-full bg-slate-700 h-10 w-10"></div>
-                            <div class="flex-1 space-y-6 py-1">
-                                <div class="h-2 bg-slate-700 rounded"></div>
-                                <div class="space-y-3">
-                                    <div class="grid grid-cols-3 gap-4">
-                                        <div class="h-2 bg-slate-700 rounded col-span-2"></div>
-                                        <div class="h-2 bg-slate-700 rounded col-span-1"></div>
-                                    </div>
-                                    <div class="h-2 bg-slate-700 rounded"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else class=" shadow-xl rounded-lg">
+                    <div v-loading="loadingInstitute" class=" shadow-xl rounded-lg">
                         <form @submit.prevent="handleClickSubmit">
                             <div class="shadow sm:rounded-md sm:overflow-hidden">
                                 <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
@@ -96,7 +81,7 @@
                                 </div>
                                 <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
                                     <button type="button" @click="handleClickCancel"
-                                        class="bg-indigo-600 mr-2 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</button>
+                                        class="bg-red-600 mr-2 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Cancel</button>
                                     <button type="submit"
                                         class="bg-emerald-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">Save</button>
                                 </div>
@@ -115,7 +100,7 @@ import { setActiveNav } from "@/composables/setActiveNavigation";
 import { defineComponent, onMounted, ref } from "vue";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
-import { getInstituteById, storeInstitute } from '@/composables/settings/institute_service'
+import { getInstituteById, storeInstitute, updateInstitute} from '@/composables/settings/institute_service'
 import { useEmitter } from "@/composables/useEmitter";
 
 export default defineComponent({
@@ -133,7 +118,6 @@ export default defineComponent({
         const emitter = useEmitter
 
         const institute = ref({
-            id: '',
             name: '',
             abbreviation: ''
         })
@@ -143,13 +127,29 @@ export default defineComponent({
         }
 
         const handleClickSubmit = async () => {
+
+            if(props.id) {
+                handleUpdateInstitute(props.id)
+                return;
+            }
+
             const { instituteRes, instituteError, loadingInstitute } = await storeInstitute(institute.value)
 
             if (!loadingInstitute.value) {
                 emitter.emit('NEW_INSTITUTE', instituteRes.value)
+                router.push('/institutes')
             }
 
             console.log(instituteError.value)
+        }
+
+        const handleUpdateInstitute = async (id) => {
+            const { instituteRes, loadingInstitute, instituteError} = await updateInstitute(id, institute.value)
+            if (!loadingInstitute.value) {
+                emitter.emit('UPDATE_INSTITUTE', instituteRes.value)
+                router.push('/institutes')
+            }
+            console.log(instituteError.value);
         }
 
         const { instituteRes, loadingInstitute, loadInstitute } = getInstituteById(props.id)

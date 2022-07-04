@@ -39,8 +39,8 @@
                         border border-transparent 
                         rounded-md shadow-sm 
                         text-sm font-medium 
-                        text-white bg-emerald-400 
-                        hover:bg-emerald-700 
+                        text-white bg-blue-700 
+                        hover:bg-blue-400 
                         focus:outline-none 
                         focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     <PlusIcon class="flex-shrink-0 h-5 w-5 text-white" aria-hidden="true" />
@@ -54,25 +54,28 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                 <!-- Replace with your content -->
                 <div class="py-4">
-                    <div class=" shadow-xl rounded-lg h-96 p-2">
-                        <div class="w-80">
-                            <input type="text" placeholder="Search Institute..." autocomplete="given-name"
+                    <div class=" shadow-xl rounded-lg p-5 border">
+                        <div class="w-2/5">
+                            <input type="text" v-model="search" @keyup.enter="handleEnterSearch"
+                                placeholder="Search Institute..." autocomplete="given-name"
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                         </div>
-                        <el-table :data="institutes" v-loading="loadingInstitutes" style="width: 100%">
-                            <el-table-column prop="name" label="Name" sortable/>
-                            <el-table-column prop="abbreviation" label="Abbreviation" sortable/>
+                        <el-table :data="institutes" v-loading="loadingInstitutes" size="large" style="width: 100%">
+                            <el-table-column prop="name" label="Name" sortable />
+                            <el-table-column prop="abbreviation" label="Abbreviation" sortable />
                             <el-table-column fixed="right" label="Actions" width="120">
                                 <template #default="scope">
                                     <el-button link type="primary" @click="handleClickEdit(scope.row)" size="small">
-                                        <PencilAltIcon class="flex-shrink-0 h-5 w-5 text-emerald-800"/>
+                                        <PencilAltIcon class="flex-shrink-0 h-5 w-5 text-emerald-800" />
                                     </el-button>
-                                    <el-button link type="primary" size="small">
-                                        <TrashIcon class="flex-shrink-0 h-5 w-5 text-red-400"/>
+                                    <el-button link type="primary" size="small"
+                                        @click="handleClickDelete(scope.row.id, scope.$index)">
+                                        <TrashIcon class="flex-shrink-0 h-5 w-5 text-red-400" />
                                     </el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
+                        <g-pagination :page_size="currentPageSize" :current_size="total" :current_page="currentPage" />
                     </div>
                 </div>
                 <!-- /End replace -->
@@ -84,9 +87,10 @@
 import { setActiveNav } from "@/composables/setActiveNavigation";
 import { useEmitter } from "@/composables/useEmitter";
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, PencilAltIcon, TrashIcon } from '@heroicons/vue/solid'
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { getInstitutes } from '@/composables/settings/institute_service'
+import { getInstitutes, deleteInstitute } from '@/composables/settings/institute_service'
+import GPagination from "@/components/GPagination.vue";
 
 export default defineComponent({
     name: 'InstituteView',
@@ -95,12 +99,19 @@ export default defineComponent({
         ChevronRightIcon,
         PlusIcon,
         PencilAltIcon,
-        TrashIcon
+        TrashIcon,
+        GPagination
     },
     setup() {
 
         const router = useRouter();
         const emitter = useEmitter
+        const search = ref("")
+        const currentPage = ref(1);
+        const currentPageSize = ref(10);
+        const institutes = ref([])
+        const total = ref(0);
+        const loadingInstitutes = ref(false)
 
         const handleClickNewInstitute = () => {
             router.push({ name: 'Create Institute' });
@@ -111,17 +122,57 @@ export default defineComponent({
         }
 
         const handleClickEdit = (data) => {
-            router.push({name: 'Update Institute', params: {id : data.id, model: data} });
+            router.push({ name: 'Update Institute', params: { id: data.id, model: data } });
         }
 
-        const { institutes, loadingInstitutes, loadInstitutes } = getInstitutes();
-        loadInstitutes();
+        const handleEnterSearch = () => {
+            getInstituteData()
+        }
 
-        onMounted(() => {
+        const getInstituteData = async () => {
+            let params = {
+                current_size: currentPageSize.value,
+                current_page: currentPage.value,
+                search: search.value,
+            }
+            loadingInstitutes.value = true;
+            await getInstitutes(params).then(res => {
+                institutes.value = res.data.data
+                loadingInstitutes.value = false;
+                total.value = res.data.total
+            }).catch(error => {
+                console.log('Error in getting institutes: ' + error)
+            })
+        }
+
+        const handleClickDelete = async (id, index) => {
+            await deleteInstitute(id)
+            institutes.value.splice(index, 1)
+        }
+
+
+        watch(search, () => {
+            if (search.value == "") {
+                getInstituteData();
+            }
+        })
+
+
+        onMounted(async () => {
             setActiveNav('Institutes')
-
+            await getInstituteData()
             emitter.on('NEW_INSTITUTE', data => {
                 institutes.value.unshift(data);
+            })
+
+            emitter.on('CHANGE_SIZE', data => {
+                currentPageSize.value = data
+                getInstituteData()
+            })
+
+            emitter.on('CHANGE_PAGE', data => {
+                currentPage.value = data
+                getInstituteData()
             })
         });
 
@@ -130,7 +181,14 @@ export default defineComponent({
             handleClickBack,
             institutes,
             loadingInstitutes,
-            handleClickEdit
+            handleClickEdit,
+            search,
+            handleEnterSearch,
+            handleClickDelete,
+            //for pagination below
+            total,
+            currentPage,
+            currentPageSize
         }
     }
 })

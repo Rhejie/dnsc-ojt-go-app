@@ -58,6 +58,14 @@
                                     </div>
 
                                     <div class="grid grid-cols-6 gap-6">
+                                        <div class="col-span-6">
+                                            <label for="Role"
+                                                class="block text-sm font-medium text-gray-700">Institute</label>
+                                            <select id="country" name="country" autocomplete="country-name"
+                                                class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <option v-for="ins in institutes" :key="ins.id" :value="ins.id">{{ins.name}} - {{ins.abbreviation}}</option>
+                                            </select>
+                                        </div>
                                         <div class="col-span-6 sm:col-span-6">
                                             <label for="name"
                                                 class="block text-sm font-medium text-gray-700">Name</label>
@@ -95,6 +103,7 @@ import { setActiveNav } from "@/composables/setActiveNavigation";
 import { defineComponent, onMounted } from "vue";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
+import { getInstitutes } from "@/composables/admin_data";
 
 export default defineComponent({
     name: 'CreateInstitute',
@@ -109,12 +118,17 @@ export default defineComponent({
         const handleClickCancel = () => {
             router.go(-1)
         }
+
+        const {loadInstitutes, loadingInstitutes, institutes} = getInstitutes()
+        loadInstitutes()
         onMounted(() => {
             setActiveNav('Courses')
         });
 
         return {
-            handleClickCancel
+            handleClickCancel,
+            loadingInstitutes,
+            institutes
         }
     }
 })
