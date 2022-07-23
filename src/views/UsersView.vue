@@ -31,7 +31,7 @@
                 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Manage Users</h2>
             </div>
             <div class="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
-                <button type="button"
+                <!-- <button type="button"
                     @click="handleClickNewUser"
                     class="ml-3 inline-flex 
                         items-center 
@@ -45,7 +45,19 @@
                         focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <PlusIcon class="flex-shrink-0 h-5 w-5 text-white" aria-hidden="true" />
                             New
-                </button>
+                </button> -->
+
+                <el-dropdown split-button @click="handleClickNewUser('new')" type="primary">
+                    Create
+                    <template #dropdown>
+                    <el-dropdown-menu>
+                        <el-dropdown-item @click="handleClickNewUser('institute')">New Institute Administrator</el-dropdown-item>
+                        <el-dropdown-item @click="handleClickNewUser('course')">New Course Administrator</el-dropdown-item>
+                        <el-dropdown-item @click="handleClickNewUser('supervisor')">New Supervisor</el-dropdown-item>
+                        <el-dropdown-item @click="handleClickNewUser('student')">New Students</el-dropdown-item>
+                    </el-dropdown-menu>
+                    </template>
+                </el-dropdown>
             </div>
         </div>
     </div>
@@ -70,7 +82,7 @@
 <script>
 import { defineComponent, onMounted, ref } from "vue";
 import { setActiveNav } from '@/composables/setActiveNavigation'
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@heroicons/vue/solid'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
 
 export default defineComponent({
@@ -78,7 +90,7 @@ export default defineComponent({
     components: {
         ChevronLeftIcon,
         ChevronRightIcon,
-        PlusIcon
+        // PlusIcon
     },
     setup() {
         const router = useRouter()
@@ -108,8 +120,8 @@ export default defineComponent({
             },
         ]);
 
-        const handleClickNewUser = () => {
-            router.push({name: 'Create User'})
+        const handleClickNewUser = (type) => {
+            router.push({name: 'Create User', params: {formType: type} })
         }
         const handleClickBack = () => {
             router.go(-1)

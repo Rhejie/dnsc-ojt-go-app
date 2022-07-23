@@ -6,20 +6,23 @@ import {
   HomeIcon,
   InboxIcon,
   OfficeBuildingIcon,
+  LibraryIcon,
   UsersIcon,
 } from '@heroicons/vue/outline'
 
 export default createStore({
   state: {
     isLoggedIn: false,
-    apiURL: 'http://dnsc-ojt-go.test/api',
-    serverPath: 'http://dnsc-ojt-go.test',
+    apiURL: 'http://127.0.0.1:8000/api',
+    serverPath: 'http://127.0.0.1:8000',
     userProfile: {},
     sideBarNavigation: [
       { name: 'Dashboard', href: '/', icon: HomeIcon, current: false },
       { name: 'Users', href: '/users', icon: UsersIcon, current: false },
       { name: 'Institutes', href: '/institutes', icon: OfficeBuildingIcon, current: false },
       { name: 'Courses', href: '/courses', icon: AcademicCapIcon, current: false },
+      { name: 'Agencies', href: '/agencies', icon: OfficeBuildingIcon, current: false },
+      { name: 'Agency Departments', href: '/agency-departments', icon: LibraryIcon, current: false },
       { name: 'Documents', href: '#', icon: InboxIcon, current: false },
       { name: 'Reports', href: '#', icon: ChartBarIcon, current: false },
     ]

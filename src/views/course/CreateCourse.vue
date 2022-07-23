@@ -44,7 +44,7 @@
         </div>
     </div>
     <main>
-        <div class="py-6">
+        <div class="py-6" v-loading="loadingCourse">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                 <!-- Replace with your content -->
                 <div class="py-4">
@@ -85,6 +85,8 @@
                                     </div>
                                 </div>
                                 <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                                    <button type="button" @click="handleClickCancel"
+                                        class="bg-red-600 mr-2 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Cancel</button>
                                     <button type="submit"
                                         class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
                                 </div>
@@ -104,7 +106,7 @@ import { defineComponent, onMounted, ref } from "vue";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
 import { getInstitutes } from "@/composables/admin_data";
-import { storeCourse } from "@/composables/settings/courses_service";
+import { getCourseById, storeCourse, updateCourse } from "@/composables/settings/courses_service";
 
 export default defineComponent({
     name: 'CreateInstitute',
@@ -112,7 +114,10 @@ export default defineComponent({
         ChevronLeftIcon,
         ChevronRightIcon
     },
-    setup() {
+    props: {
+        id: null
+    },
+    setup(props) {
         
         const router = useRouter()
 
@@ -129,9 +134,17 @@ export default defineComponent({
         }
 
         const {loadInstitutes, loadingInstitutes, institutes} = getInstitutes()
-        loadInstitutes()
 
         const handleSubmit = async () => {
+
+            if(props.id && typeof props.id != undefined) {
+                const {loadingCourseUpdate, responsedUpdate, errorCourseUpdate} = await updateCourse(props.id, course.value)
+                errorCourses.value = errorCourseUpdate.value;
+                if(responsedUpdate.value && !loadingCourseUpdate.value) {
+                    router.push('/courses')
+                }
+                return 
+            }
             
             const {response, loadingCourse, errorCourse} = await storeCourse(course.value)
             if(response.value && !loadingCourse.value) {
@@ -141,8 +154,21 @@ export default defineComponent({
             errorCourses.value = errorCourse.value
         }
 
-        onMounted(() => {
+        const {loadCourse, loadingCourse, errorCourse, response} = getCourseById(props.id)
+
+
+        onMounted( async () => {
             setActiveNav('Courses')
+            await loadInstitutes()
+
+            if(props.id && typeof props.id !== undefined) {
+
+                await loadCourse()
+
+                course.value = response.value
+
+                console.log(course.value)
+            }
         });
 
         return {
@@ -151,7 +177,9 @@ export default defineComponent({
             institutes,
             course,
             handleSubmit,
-            errorCourses
+            errorCourses,
+            loadingCourse,
+            errorCourse,
         }
     }
 })

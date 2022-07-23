@@ -30,6 +30,51 @@ export const storeCourse = async (data) => {
     }
 }
 
-export const getCourseById = async (id) => {
-    console.log(id)
+export const updateCourse = async (id, course) => {
+    const responsedUpdate = ref();
+    const errorCourseUpdate = ref();
+    const loadingCourseUpdate = ref(false)
+
+    loadingCourseUpdate.value = true;
+
+    await http().patch(`/user/setting/courses/${id}`, course).then(res => {
+        responsedUpdate.value = res.data
+        loadingCourseUpdate.value = false;
+        ElNotification({
+            title: 'Success',
+            message: 'Successfully Updated!',
+            type: 'success',
+          })
+    }).catch(error => {
+        errorCourseUpdate.value = error.response.data
+    })
+
+    return {
+        responsedUpdate,
+        errorCourseUpdate,
+        loadingCourseUpdate
+    }
+
+}
+
+export const getCourseById = (id) => {
+    const response = ref();
+    const errorCourse = ref();
+    const loadingCourse = ref(false);
+
+    const loadCourse = async () => {
+        loadingCourse.value = true
+        await http().get(`/user/setting/courses/${id}`).then(res => {
+            response.value = res.data
+        }).catch(error => {
+            errorCourse.value = error
+        }).finally(() => loadingCourse.value = false)
+    }
+
+    return {
+        loadCourse,
+        errorCourse,
+        loadingCourse,
+        response
+    }
 }

@@ -31,6 +31,7 @@ export const getInstitutes = () => {
         await http().get('/user/setting/get-institutes').then(res => {
             institutes.value = res.data
             loadingInstitutes.value = false;
+            console.log('load institutes')
         })
     }
 
@@ -38,5 +39,25 @@ export const getInstitutes = () => {
         loadingInstitutes,
         institutes,
         loadInstitutes
+    }
+}
+
+export const getCourses = () => {
+    const loadingCourses = ref(false);
+    const courses = ref([])
+
+    const loadCourses = async () => {
+        loadingCourses.value = true;
+        await http().get('/user/setting/get-courses').then(res => {
+            courses.value = res.data
+            loadingCourses.value = false;
+            console.log('load courses')
+        })
+    }
+
+    return {
+        loadingCourses,
+        courses,
+        loadCourses
     }
 }

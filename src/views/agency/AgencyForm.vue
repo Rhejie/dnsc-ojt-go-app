@@ -19,8 +19,8 @@
                     <li>
                         <div class="flex items-center">
                             <ChevronRightIcon class="flex-shrink-0 h-5 w-5 text-gray-400" aria-hidden="true" />
-                            <router-link to="/institutes" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                                Institutes
+                            <router-link to="/agencies" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+                                Agencies
                             </router-link>
 
                         </div>
@@ -41,7 +41,7 @@
             <div class="flex-1 min-w-0">
                 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">{{ id ? "Update" :
                         "Create"
-                }} Institute</h2>
+                }} Agency</h2>
             </div>
             <div class="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
             </div>
@@ -57,7 +57,7 @@
                             <div class="shadow sm:rounded-md sm:overflow-hidden">
                                 <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
                                     <div>
-                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Institute Information
+                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Agency Information
                                         </h3>
                                     </div>
 
@@ -65,16 +65,30 @@
                                         <div class="col-span-6 sm:col-span-6">
                                             <label for="name"
                                                 class="block text-sm font-medium text-gray-700">Name</label>
-                                            <input type="text" name="name" v-model="institute.name" id="name"
-                                                autocomplete="given-name" placeholder="Institute Name..."
+                                            <input type="text" name="name" v-model="agency.name" id="name"
+                                                autocomplete="given-name" placeholder="Name..."
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                                         </div>
 
-                                        <div class="col-span-6 sm:col-span-3">
+                                        <div class="col-span-6 sm:col-span-6">
                                             <label for="name"
-                                                class="block text-sm font-medium text-gray-700">Abbreviation</label>
-                                            <input type="text" v-model="institute.abbreviation" name="name" id="name"
-                                                placeholder="Institute Abbreviation..." autocomplete="family-name"
+                                                class="block text-sm font-medium text-gray-700">Address</label>
+                                            <textarea type="text" v-model="agency.address" name="name" id="name"
+                                                placeholder="Address..." autocomplete="family-name"
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div class="col-span-3 sm:col-span-3">
+                                            <label for="name"
+                                                class="block text-sm font-medium text-gray-700">Latitude</label>
+                                            <input type="text" name="name" v-model="agency.latitude" id="name"
+                                                autocomplete="given-name" placeholder="Latitude..."
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div class="col-span-3 sm:col-span-3">
+                                            <label for="name"
+                                                class="block text-sm font-medium text-gray-700">Longitude</label>
+                                            <input type="text" name="name" v-model="agency.longitude" id="name"
+                                                autocomplete="given-name" placeholder="Longitude..."
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                                         </div>
                                     </div>
@@ -93,81 +107,66 @@
             </div>
         </div>
     </main>
-
 </template>
 <script>
 import { setActiveNav } from "@/composables/setActiveNavigation";
 import { defineComponent, onMounted, ref } from "vue";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
-import { getInstituteById, storeInstitute, updateInstitute } from '@/composables/settings/institute_service'
-import { useEmitter } from "@/composables/useEmitter";
+import { storeAgencyData } from '@/composables/agency_service'
 
 export default defineComponent({
-    name: 'CreateInstitute',
+    name: 'AgencyForm',
+    props: {
+        id: null
+    },
     components: {
         ChevronLeftIcon,
         ChevronRightIcon
     },
-    props: {
-        id: null,
-        model: {}
-    },
     setup(props) {
         const router = useRouter()
-        const emitter = useEmitter
-
-        const institute = ref({
+        const agency = ref({
             name: '',
-            abbreviation: ''
+            address: '',
+            latitude: '',
+            longitude: '',
         })
+        const error = ref()
+        const loading = ref(false)
 
         const handleClickCancel = () => {
             router.go(-1)
         }
 
-        const handleClickSubmit = async () => {
+        
 
-            if (props.id) {
-                handleUpdateInstitute(props.id)
+        const handleClickSubmit = async () => {
+            if (props.id && typeof props.id != undefined) {
                 return;
             }
-
-            const { instituteRes, instituteError, loadingInstitute } = await storeInstitute(institute.value)
-
-            if (!loadingInstitute.value) {
-                emitter.emit('NEW_INSTITUTE', instituteRes.value)
-                router.push('/institutes')
+            const {storeAgency, response, errorAgency, loadingAgency} = storeAgencyData(agency.value)
+            await storeAgency()
+            agency.value = response.value,
+            error.value = errorAgency.value
+            loading.value = loadingAgency.value
+            if(response.value && !loading.value) {
+                router.push('/agencies')
             }
-
-            console.log(instituteError.value)
         }
 
-        const handleUpdateInstitute = async (id) => {
-            const { instituteRes, loadingInstitute, instituteError } = await updateInstitute(id, institute.value)
-            if (!loadingInstitute.value) {
-                emitter.emit('UPDATE_INSTITUTE', instituteRes.value)
-                router.push('/institutes')
+        onMounted(() => {
+            setActiveNav('Agencies')
+
+            if(props.id && typeof props.id != undefined) {
+                console.log('has id')
             }
-            console.log(instituteError.value);
-        }
-
-        const { instituteRes, loadingInstitute, loadInstitute } = getInstituteById(props.id)
-
-        onMounted(async () => {
-            setActiveNav('Institutes')
-
-            if (props.id) {
-                await loadInstitute()
-                institute.value = instituteRes.value
-            }
-        });
+        })
 
         return {
             handleClickCancel,
             handleClickSubmit,
-            institute,
-            loadingInstitute
+            agency
         }
     }
 })

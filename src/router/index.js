@@ -19,9 +19,10 @@ const routes = [
         component: () => import('../views/UsersView.vue'),
       },
       {
-        path: '/users/create',
+        path: '/users/create/:formType',
         name: 'Create User',
         component: () => import('../views/user/CreateUserView.vue'),
+        props: true
       },
       {
         path: '/users/update/:id',
@@ -60,6 +61,17 @@ const routes = [
         name: 'Update Course',
         component: () => import('../views/course/CreateCourse.vue'),
         props: true
+      },
+      {
+        path: '/agencies',
+        name: 'Agencies',
+        component: () => import('../views/agency/AgencyView.vue'),
+        props: true
+      },
+      {
+        path: '/agencies/create',
+        name: 'Create Agency',
+        component: () => import('../views/agency/AgencyForm.vue'),
       },
 
     ],

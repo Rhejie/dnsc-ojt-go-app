@@ -157,7 +157,7 @@ export default defineComponent({
         }
 
         const handleClickEdit = (course) => {
-            console.log(course)
+            router.push({name: 'Update Course', params: {id: course.id }})
         } 
 
         const handleClickDelete = (id, index) => {
