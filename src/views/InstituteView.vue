@@ -109,8 +109,8 @@ export default defineComponent({
         const search = ref("")
         const currentPage = ref(1);
         const currentPageSize = ref(10);
-        const institutes = ref([])
         const total = ref(0);
+        const institutes = ref([])
         const loadingInstitutes = ref(false)
 
         const handleClickNewInstitute = () => {

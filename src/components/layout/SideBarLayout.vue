@@ -73,7 +73,7 @@
     </div>
 </template>
 <script>
-import { defineComponent, onMounted, ref } from 'vue'
+import { computed, defineComponent, onMounted, ref } from 'vue'
 import {
     Dialog,
     DialogPanel,
@@ -100,12 +100,11 @@ export default defineComponent({
         const emitter = useEmitter;
         const store = useStore();
 
-        const navigation = store.state.sideBarNavigation
+        const navigation = computed(() => store.state.sideBarNavigation) 
 
 
         const sidebarOpen = ref(false)
         const handClick = () => {
-            console.log('asdasd');
             sidebarOpen.value = !sidebarOpen.value
         }
 

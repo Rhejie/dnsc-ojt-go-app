@@ -19,8 +19,8 @@
                     <li>
                         <div class="flex items-center">
                             <ChevronRightIcon class="flex-shrink-0 h-5 w-5 text-gray-400" aria-hidden="true" />
-                            <router-link to="/agencies" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                                Agencies
+                            <router-link to="/agency-departments" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+                                Departments
                             </router-link>
 
                         </div>
@@ -41,7 +41,7 @@
             <div class="flex-1 min-w-0">
                 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">{{ id ? "Update" :
                         "Create"
-                }} Agency</h2>
+                }} Department</h2>
             </div>
             <div class="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
             </div>
@@ -57,7 +57,7 @@
                             <div class="shadow sm:rounded-md sm:overflow-hidden">
                                 <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
                                     <div>
-                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Agency Information
+                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Department Information
                                         </h3>
                                     </div>
 
@@ -65,31 +65,39 @@
                                         <div class="col-span-6 sm:col-span-6">
                                             <label for="name"
                                                 class="block text-sm font-medium text-gray-700">Name</label>
-                                            <input type="text" name="name" v-model="agency.name" id="name"
+                                            <textarea type="text" name="name" v-model="department.name" id="name"
                                                 autocomplete="given-name" placeholder="Name..."
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                                         </div>
 
                                         <div class="col-span-6 sm:col-span-6">
                                             <label for="name"
-                                                class="block text-sm font-medium text-gray-700">Address</label>
-                                            <textarea type="text" v-model="agency.address" name="name" id="name"
+                                                class="block text-sm font-medium text-gray-700">Head</label>
+                                            <input type="text" v-model="department.head" name="name" id="name"
+                                                placeholder="Address..." autocomplete="family-name"
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div class="col-span-6 sm:col-span-6">
+                                            <label for="name"
+                                                class="block text-sm font-medium text-gray-700">Description</label>
+                                            <textarea type="text" v-model="department.description" name="name" id="name"
                                                 placeholder="Address..." autocomplete="family-name"
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                                         </div>
                                         <div class="col-span-3 sm:col-span-3">
                                             <label for="name"
-                                                class="block text-sm font-medium text-gray-700">Latitude</label>
-                                            <input type="text" name="name" v-model="agency.latitude" id="name"
+                                                class="block text-sm font-medium text-gray-700">Phone Number</label>
+                                            <input type="text" name="name" v-model="department.phone_number" id="name"
                                                 autocomplete="given-name" placeholder="Latitude..."
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                                         </div>
                                         <div class="col-span-3 sm:col-span-3">
-                                            <label for="name"
-                                                class="block text-sm font-medium text-gray-700">Longitude</label>
-                                            <input type="text" name="name" v-model="agency.longitude" id="name"
-                                                autocomplete="given-name" placeholder="Longitude..."
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                            <label for="Role"
+                                                class="block text-sm font-medium text-gray-700">Agency</label>
+                                            <select id="country" v-model="department.agency_id" name="country" autocomplete="country-name"
+                                                class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <option v-for="agency in agencies" :key="agency.id" :value="agency.id">{{agency.name}}</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -111,12 +119,13 @@
 <script>
 import { setActiveNav } from "@/composables/setActiveNavigation";
 import { defineComponent, onMounted, ref } from "vue";
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
-import { storeAgencyData, getAgencyById, updateAgencyData } from '@/composables/agency_service'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
+import { getAgencies } from '@/composables/admin_data'
+import { getdepartmentById, storeDepartmentData, updateDepartmentData } from "@/composables/agency_department_service";
 
 export default defineComponent({
-    name: 'AgencyForm',
+    nmae: 'AgencyDepartmentForm',
     props: {
         id: null
     },
@@ -126,11 +135,12 @@ export default defineComponent({
     },
     setup(props) {
         const router = useRouter()
-        const agency = ref({
+        const department = ref({
             name: '',
-            address: '',
-            latitude: '',
-            longitude: '',
+            head: '',
+            phone_number: '',
+            agency_id: '',
+            description: ''
         })
         const error = ref()
         const loading = ref(true)
@@ -139,46 +149,50 @@ export default defineComponent({
             router.go(-1)
         }
 
-        
+        const {loadingAgencies, loadAgenciesData, agencies} = getAgencies()
+        loadAgenciesData()
 
         const handleClickSubmit = async () => {
-            if (props.id && typeof props.id != undefined) {
-                const {updateAgency, hasError} = updateAgencyData(agency.value, props.id)
-                await updateAgency()
-
-                if(hasError.value) {
-                    return 
-                }
-
-                router.push('/agencies')
-                return 
+            if(props.id && typeof props.id != undefined) {
+                const {updateDepartment, loadingDepartment, responseUpdate,errorDepartment} = updateDepartmentData(department.value, props.id)
+                await updateDepartment()
+                error.value = errorDepartment.value
+                loading.value = loadingDepartment.value
+                if(errorDepartment.value && !responseUpdate.value) return
+                router.push('/agency-departments')
+                return ;
             }
-            const {storeAgency, response, errorAgency, loadingAgency} = storeAgencyData(agency.value)
-            await storeAgency()
-            agency.value = response.value,
-            error.value = errorAgency.value
-            loading.value = loadingAgency.value
-            if(response.value && !loading.value) {
-                router.push('/agencies')
+
+            const  {storeDepartment, response, errorDepartment, loadingDepartment} = storeDepartmentData(department.value)
+            await storeDepartment()
+            if(!response.value && errorDepartment.value) {
+                return;
             }
+            loading.value = loadingDepartment.value
+
+            router.push('/agency-departments')
+            return 
         }
 
-        const {loadAgency, loadingAgency, errorAgency, response} = getAgencyById(props.id)
-        onMounted( async () => {
-            setActiveNav('Agencies')
+        const {loadDepartment, loadingDepartment, response} = getdepartmentById(props.id)
 
+        onMounted( async() => {
+            setActiveNav('Departments')
             if(props.id && typeof props.id != undefined) {
-                await loadAgency()
-                loading.value = loadingAgency.value
-                agency.value = response.value,
-                error.value = errorAgency.value
+                await loadDepartment()
+                loading.value = loadingDepartment.value
+                department.value = response.value
             }
         })
 
         return {
             handleClickCancel,
             handleClickSubmit,
-            agency
+            error,
+            loading,
+            department,
+            loadingAgencies,
+            agencies
         }
     }
 })

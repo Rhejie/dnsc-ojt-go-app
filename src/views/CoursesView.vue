@@ -51,7 +51,7 @@
     </div>
     <main>
         <div class="py-6">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+            <div class="max-w-8xl mx-auto px-4 sm:px-6 md:px-8">
                 <!-- Replace with your content -->
                 <div class="py-4">
                     <div class="shadow-xl rounded-lg p-5 border">
@@ -62,11 +62,18 @@
                         </div>
                         <el-table v-loading="loadingCourse" :data="courses" size="large" style="width: 100%">
                             <el-table-column prop="name" label="Name" sortable/>
-                            <el-table-column prop="abbreviation" label="Abbreviation" sortable/>
-                            <el-table-column label="Institute" sortable>
+                            <el-table-column prop="abbreviation" label="Abbreviation" sortable width="150"/>
+                            <el-table-column label="Institute" sortable >
                                 <template #default="scope">
                                     <div>
                                         {{institute(scope.row)}}
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="Majors" sortable >
+                                <template #default="scope">
+                                    <div>
+                                        <el-tag class="ml-2" type="info" v-for="major in scope.row.majors" :key="major.id">{{major.name}}</el-tag>
                                     </div>
                                 </template>
                             </el-table-column>

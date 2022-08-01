@@ -34,6 +34,7 @@ export const updateAgencyData = (agency, id) => {
     const responseUpdate = ref()
     const errorAgency = ref()
     const loadingAgency = ref(false)
+    const hasError = ref(false)
 
     const updateAgency = async () => {
         loadingAgency.value = true
@@ -47,6 +48,7 @@ export const updateAgencyData = (agency, id) => {
               })
         }).catch(err => {
             errorAgency.value = err.response.data
+            hasError.value = true
         })
     }
 
@@ -54,7 +56,8 @@ export const updateAgencyData = (agency, id) => {
         responseUpdate,
         errorAgency,
         loadingAgency,
-        updateAgency
+        updateAgency,
+        hasError
     }
 }
 
@@ -82,5 +85,26 @@ export const getAgencies = (params) => {
         loadAgencies,
         errorAgencies,
         totalAgencies
+    }
+}
+
+export const getAgencyById = (id) => {
+    const response = ref()
+    const errorAgency = ref()
+    const loadingAgency = ref(false)
+
+    const loadAgency = async () => {
+        loadingAgency.value = true
+        await http().get(`/user/agency/agencies/${id}`).then(res => {
+            response.value = res.data
+            loadingAgency.value = false
+        })
+    }
+
+    return {
+        loadAgency,
+        response,
+        errorAgency,
+        loadingAgency
     }
 }

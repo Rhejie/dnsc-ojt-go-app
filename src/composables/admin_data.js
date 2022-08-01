@@ -22,13 +22,13 @@ export const getRoles = () => {
     }
 }
 
-export const getInstitutes = () => {
+export const getInstitutes = (query = '') => {
     const loadingInstitutes = ref(false);
     const institutes = ref([])
 
     const loadInstitutes = async () => {
         loadingInstitutes.value = true;
-        await http().get('/user/setting/get-institutes').then(res => {
+        await http().get(`/user/setting/get-institutes?search=${query}`).then(res => {
             institutes.value = res.data
             loadingInstitutes.value = false;
             console.log('load institutes')
@@ -42,13 +42,13 @@ export const getInstitutes = () => {
     }
 }
 
-export const getCourses = () => {
+export const getCourses = (query = '') => {
     const loadingCourses = ref(false);
     const courses = ref([])
 
     const loadCourses = async () => {
         loadingCourses.value = true;
-        await http().get('/user/setting/get-courses').then(res => {
+        await http().get(`/user/setting/get-courses?search=${query}`).then(res => {
             courses.value = res.data
             loadingCourses.value = false;
             console.log('load courses')
@@ -59,5 +59,40 @@ export const getCourses = () => {
         loadingCourses,
         courses,
         loadCourses
+    }
+}
+
+export const getAgencies = () => {
+    const loadingAgencies = ref(true)
+    const agencies = ref([])
+    const loadAgenciesData = async () => {
+        await http().get('/user/setting/get-agencies').then(res => {
+            agencies.value = res.data
+            loadingAgencies.value = false;
+        })
+    }
+
+    return {
+        loadingAgencies,
+        agencies,
+        loadAgenciesData
+    }
+}
+
+
+export const getDepartments = (query = '') => {
+    const loadingDepartments = ref(true)
+    const departments = ref([])
+    const loadDepartmentsData = async () => {
+        await http().get(`/user/setting/get-departments?search=${query}`).then(res => {
+            departments.value = res.data
+            loadingDepartments.value = false;
+        })
+    }
+
+    return {
+        loadingDepartments,
+        departments,
+        loadDepartmentsData
     }
 }

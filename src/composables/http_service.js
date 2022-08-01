@@ -15,7 +15,19 @@ export function httpServer() {
     return axios.create({
         baseURL: store.state.serverPath,
         headers: {
+            'Authorization': 'Bearer '+accessToken(),
             'Content-Type': 'multipart/form-data'
         }
+    });
+}
+
+
+export function httpFile() {
+    return axios.create({
+        baseURL: store.state.apiURL,
+        headers: {
+            'Authorization': 'Bearer '+accessToken()
+        },
+        responseType: 'blob'
     });
 }

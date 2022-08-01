@@ -19,8 +19,8 @@
                     <li>
                         <div class="flex items-center">
                             <ChevronRightIcon class="flex-shrink-0 h-5 w-5 text-gray-400" aria-hidden="true" />
-                            <router-link to="/agencies" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                                Agencies
+                            <router-link to="/requirements" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+                                Requirements
                             </router-link>
 
                         </div>
@@ -41,7 +41,7 @@
             <div class="flex-1 min-w-0">
                 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">{{ id ? "Update" :
                         "Create"
-                }} Agency</h2>
+                }} Requirement</h2>
             </div>
             <div class="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
             </div>
@@ -52,12 +52,12 @@
             <div class="max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
                 <!-- Replace with your content -->
                 <div class="py-4">
-                    <div v-loading="loadingInstitute" class=" shadow-xl rounded-lg">
+                    <div v-loading="loadingRequirements" class=" shadow-xl rounded-lg">
                         <form @submit.prevent="handleClickSubmit">
                             <div class="shadow sm:rounded-md sm:overflow-hidden">
                                 <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
                                     <div>
-                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Agency Information
+                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Requirements Information
                                         </h3>
                                     </div>
 
@@ -65,31 +65,17 @@
                                         <div class="col-span-6 sm:col-span-6">
                                             <label for="name"
                                                 class="block text-sm font-medium text-gray-700">Name</label>
-                                            <input type="text" name="name" v-model="agency.name" id="name"
-                                                autocomplete="given-name" placeholder="Name..."
+                                            <input type="text" name="name" v-model="form.name" id="name"
+                                                autocomplete="given-name" placeholder="Institute Name..."
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                                         </div>
 
-                                        <div class="col-span-6 sm:col-span-6">
+                                        <div class="col-span-6 sm:col-span-3">
                                             <label for="name"
-                                                class="block text-sm font-medium text-gray-700">Address</label>
-                                            <textarea type="text" v-model="agency.address" name="name" id="name"
-                                                placeholder="Address..." autocomplete="family-name"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-                                        <div class="col-span-3 sm:col-span-3">
-                                            <label for="name"
-                                                class="block text-sm font-medium text-gray-700">Latitude</label>
-                                            <input type="text" name="name" v-model="agency.latitude" id="name"
-                                                autocomplete="given-name" placeholder="Latitude..."
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-                                        <div class="col-span-3 sm:col-span-3">
-                                            <label for="name"
-                                                class="block text-sm font-medium text-gray-700">Longitude</label>
-                                            <input type="text" name="name" v-model="agency.longitude" id="name"
-                                                autocomplete="given-name" placeholder="Longitude..."
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                                class="block text-sm font-medium text-gray-700">Description</label>
+                                            <textarea v-model="form.description" name="name" id="name"
+                                                placeholder="Institute Abbreviation..." autocomplete="family-name"
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" ></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -109,76 +95,78 @@
     </main>
 </template>
 <script>
-import { setActiveNav } from "@/composables/setActiveNavigation";
 import { defineComponent, onMounted, ref } from "vue";
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
+import { setActiveNav } from "@/composables/setActiveNavigation";
+import { ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
-import { storeAgencyData, getAgencyById, updateAgencyData } from '@/composables/agency_service'
+import { getRequirementById, storeRequirement, updateRequirement } from "@/composables/courses/requirement_service"
 
 export default defineComponent({
-    name: 'AgencyForm',
-    props: {
-        id: null
-    },
+    name: "RequirementForm",
     components: {
         ChevronLeftIcon,
         ChevronRightIcon
     },
+    props: {
+        id: null
+    },
     setup(props) {
-        const router = useRouter()
-        const agency = ref({
+
+        const router = useRouter();
+
+        const form = ref({
             name: '',
-            address: '',
-            latitude: '',
-            longitude: '',
-        })
-        const error = ref()
-        const loading = ref(true)
+            description: '',
+        });
+
+        const loadingRequirements = ref(false)
 
         const handleClickCancel = () => {
             router.go(-1)
         }
 
-        
-
         const handleClickSubmit = async () => {
-            if (props.id && typeof props.id != undefined) {
-                const {updateAgency, hasError} = updateAgencyData(agency.value, props.id)
-                await updateAgency()
 
-                if(hasError.value) {
-                    return 
+            if(props.id) {
+                const  {update, requirement, loadingRequirement} = updateRequirement(form.value, form.value.id)
+                loadingRequirements.value = true
+                await update();
+                loadingRequirements.value = loadingRequirement.value
+                if(requirement.value) {
+                    router.push('/requirements')
                 }
-
-                router.push('/agencies')
-                return 
+                return;
             }
-            const {storeAgency, response, errorAgency, loadingAgency} = storeAgencyData(agency.value)
-            await storeAgency()
-            agency.value = response.value,
-            error.value = errorAgency.value
-            loading.value = loadingAgency.value
-            if(response.value && !loading.value) {
-                router.push('/agencies')
+            loadingRequirements.value = true
+            const {store, requirement, loadingRequirement} = storeRequirement(form.value);
+            await store();
+            loadingRequirements.value = loadingRequirement.value;
+            if(requirement.value) {
+                form.value = requirement.value
+                router.push('/requirements')
             }
         }
 
-        const {loadAgency, loadingAgency, errorAgency, response} = getAgencyById(props.id)
-        onMounted( async () => {
-            setActiveNav('Agencies')
+        const {load, loadingRequirement, requirement} = getRequirementById(props.id);
 
-            if(props.id && typeof props.id != undefined) {
-                await loadAgency()
-                loading.value = loadingAgency.value
-                agency.value = response.value,
-                error.value = errorAgency.value
+        onMounted(async () => {
+            console.log(props.id)
+            if(props.id) {
+                console.log('asdasd')
+                loadingRequirements.value = true
+                await load();
+                loadingRequirements.value = loadingRequirement.value
+                form.value = requirement.value
             }
+            setActiveNav('Requirements')
         })
 
         return {
+            form,
+            loadingRequirements,
             handleClickCancel,
             handleClickSubmit,
-            agency
+            loadingRequirement
         }
     }
 })

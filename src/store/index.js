@@ -4,10 +4,11 @@ import {
   ChartBarIcon,
   AcademicCapIcon,
   HomeIcon,
-  InboxIcon,
   OfficeBuildingIcon,
   LibraryIcon,
   UsersIcon,
+  CalendarIcon,
+  ArchiveIcon
 } from '@heroicons/vue/outline'
 
 export default createStore({
@@ -22,9 +23,11 @@ export default createStore({
       { name: 'Institutes', href: '/institutes', icon: OfficeBuildingIcon, current: false },
       { name: 'Courses', href: '/courses', icon: AcademicCapIcon, current: false },
       { name: 'Agencies', href: '/agencies', icon: OfficeBuildingIcon, current: false },
-      { name: 'Agency Departments', href: '/agency-departments', icon: LibraryIcon, current: false },
-      { name: 'Documents', href: '#', icon: InboxIcon, current: false },
+      { name: 'Departments', href: '/agency-departments', icon: LibraryIcon, current: false },
+      { name: 'Requirements', href: '/requirements', icon: ArchiveIcon, current: false },
+      { name: 'School Year', href: '/school-year', icon: CalendarIcon, current: false },
       { name: 'Reports', href: '#', icon: ChartBarIcon, current: false },
+      { name: 'File Requirements', href: '/file-requirements', icon: ArchiveIcon, current: false },
     ]
   },
   getters: {
@@ -43,17 +46,37 @@ export default createStore({
         }
         return nav
       })
+    },
+    setSideBarByRole(state) {
+      if(state.userProfile.role_id == 2) {
+        state.sideBarNavigation = state.sideBarNavigation.filter((nav) => nav.name != 'Institutes')
+      }
+      else if(state.userProfile.role_id == 3) {
+        state.sideBarNavigation = state.sideBarNavigation.filter((nav) => nav.name != 'Institutes' && nav.name != 'Courses' && nav.name != 'School Year')
+      }
+      else if(state.userProfile.role_id == 5) {
+        state.sideBarNavigation = state.sideBarNavigation.filter((nav) => 
+          nav.name != 'Institutes' && 
+          nav.name != 'Courses' && 
+          nav.name != 'School Year' &&
+          nav.name != 'Requirements' &&
+          nav.name != 'Departments' &&
+          nav.name != 'Users' &&
+          nav.name != 'Agencies')
+      }
     }
   },
   actions: {
     async loginUser(context, payload) {
       await login(payload).then(res => {
         context.commit('setUserPorfile', res.data.user)
+        context.commit('setSideBarByRole')
       })
     },
     async getUserProfile(context) {
       await getProfile().then(res => {
         context.commit('setUserPorfile', res.data)
+        context.commit('setSideBarByRole')
       }).catch(error => {
         if (error) {
           localStorage.removeItem('dnsc')

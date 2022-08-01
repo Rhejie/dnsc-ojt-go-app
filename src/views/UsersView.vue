@@ -2,7 +2,8 @@
     <div class="px-5 pt-2 bg-green-100 pb-5 shadow-md">
         <div>
             <nav class="sm:hidden" aria-label="Back">
-                <a href="#" @click="handleClickBack" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+                <a href="#" @click="handleClickBack"
+                    class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
                     <ChevronLeftIcon class="flex-shrink-0 -ml-1 mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
                     Back
                 </a>
@@ -50,12 +51,15 @@
                 <el-dropdown split-button @click="handleClickNewUser('new')" type="primary">
                     Create
                     <template #dropdown>
-                    <el-dropdown-menu>
-                        <el-dropdown-item @click="handleClickNewUser('institute')">New Institute Administrator</el-dropdown-item>
-                        <el-dropdown-item @click="handleClickNewUser('course')">New Course Administrator</el-dropdown-item>
-                        <el-dropdown-item @click="handleClickNewUser('supervisor')">New Supervisor</el-dropdown-item>
-                        <el-dropdown-item @click="handleClickNewUser('student')">New Students</el-dropdown-item>
-                    </el-dropdown-menu>
+                        <el-dropdown-menu>
+                            <el-dropdown-item v-if="user.role_id == 1" @click="handleClickNewUser('institute')">New Institute Administrator
+                            </el-dropdown-item>
+                            <el-dropdown-item v-if="user.role_id == 1 || user.role_id == 2" @click="handleClickNewUser('course')">New Course Administrator
+                            </el-dropdown-item>
+                            <el-dropdown-item @click="handleClickNewUser('supervisor')">New Supervisor
+                            </el-dropdown-item>
+                            <el-dropdown-item @click="handleClickNewUser('student')">New Students</el-dropdown-item>
+                        </el-dropdown-menu>
                     </template>
                 </el-dropdown>
             </div>
@@ -63,73 +67,118 @@
     </div>
     <main>
         <div class="py-6">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-            <!-- Replace with your content -->
-            <div class="py-4">
-              <div class=" shadow-xl rounded-lg h-96" >
-                <el-table :data="users" style="width: 100%">
-                    <el-table-column prop="date" label="Date" width="180" />
-                    <el-table-column prop="name" label="Name" width="180" />
-                    <el-table-column prop="address" label="Address" />
-                </el-table>
-              </div>
+            <div class="max-w-8xl mx-auto px-4 sm:px-6 md:px-8">
+                <!-- Replace with your content -->
+                <div class="py-4">
+
+                    <el-card shadow="always">
+
+                        <el-row>
+                            <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+                                <el-row>
+                                    <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+                                        <role-select/>
+                                    </el-col>
+                                    <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6" v-if="params.role_id == 2 || params.role_id == 3">
+                                        <institute-select/>
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                        </el-row>
+                        <el-table :data="users" v-loading="loadingUsers" style="width: 100%">
+                            <el-table-column prop="firstname" label="First Name" />
+                            <el-table-column prop="middlename" label="Middle Name" />
+                            <el-table-column prop="lastname" label="Last Name" />
+                            <el-table-column prop="suffix" label="Suffix" />
+                            <el-table-column prop="gender" label="Gender" />
+                            <el-table-column prop="phone_number" label="Phone" />
+                            <el-table-column prop="role.name" label="Role" />
+                            <el-table-column prop="institute.name" label="Institute" />
+                            <el-table-column prop="course.name" label="Course" />
+                            <el-table-column prop="department.name" label="Department" />
+                        </el-table>
+                    </el-card>
+
+                </div>
+                <!-- /End replace -->
             </div>
-            <!-- /End replace -->
-          </div>
         </div>
-      </main>
+    </main>
 </template>
 <script>
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, reactive, ref} from "vue";
 import { setActiveNav } from '@/composables/setActiveNavigation'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
+import RoleSelect from "@/components/categories/RoleSelect.vue"
+import InstituteSelect from "@/components/categories/InstituteSelect.vue"
+import { getUsers } from "@/composables/user_service";
+import { useEmitter } from "@/composables/useEmitter";
+import { useStore } from "vuex";
 
 export default defineComponent({
     name: 'UserView',
     components: {
         ChevronLeftIcon,
         ChevronRightIcon,
-        // PlusIcon
+        RoleSelect,
+        InstituteSelect
     },
     setup() {
         const router = useRouter()
+        const store = useStore();
+        const user = reactive(store.state.userProfile);
+        const emitter  = useEmitter;
+        const currentPage = ref(1);
+        const currentPageSize = ref(10);
+        const total = ref(0);
+        const search = ref('')
+        const params = ref({
+            current_size: currentPageSize.value,
+            current_page: currentPage.value,
+            search: search.value,
+            role_id: 'all',
+            institute_id: 'all',
+        })
+
+        
+        const {load, users, loadingUsers} = getUsers(params.value)
+        
+        const getUsersData = async () => {
+            await load()
+        }
         onMounted(() => {
             setActiveNav('Users')
+            getUsersData()
+
+            emitter.on('SELECTED_ROLE', role => {
+                params.value.role_id = role
+                getUsersData()
+            })
+
+            emitter.on('SELECTED_INSTITUTE',institute => {
+                params.value.institute_id = institute
+                getUsersData()
+            })
         });
-        const users = ref([
-            {
-                date: '2016-05-03',
-                name: 'Tom',
-                address: 'No. 189, Grove St, Los Angeles',
-            },
-            {
-                date: '2016-05-02',
-                name: 'Tom',
-                address: 'No. 189, Grove St, Los Angeles',
-            },
-            {
-                date: '2016-05-04',
-                name: 'Tom',
-                address: 'No. 189, Grove St, Los Angeles',
-            },
-            {
-                date: '2016-05-01',
-                name: 'Tom',
-                address: 'No. 189, Grove St, Los Angeles',
-            },
-        ]);
+        
 
         const handleClickNewUser = (type) => {
-            router.push({name: 'Create User', params: {formType: type} })
+            router.push({ name: 'Create User', params: { formType: type } })
         }
         const handleClickBack = () => {
             router.go(-1)
-        } 
+        }
         return {
             users,
+            loadingUsers,
+            params,
             handleClickNewUser,
-            handleClickBack
+            handleClickBack,
+            currentPage,
+            currentPageSize,
+            total,
+            user
         }
     }
 })

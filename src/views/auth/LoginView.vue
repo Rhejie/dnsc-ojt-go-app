@@ -63,6 +63,7 @@ export default defineComponent({
         const handleClickLogin = async () => {
             await store.dispatch('loginUser', user.value).then(() => {
                 router.push('/')
+                document.body.style.backgroundImage = "";
             }).catch(errs => {
                 // switch (errs.response.status) {
                 //     case 422:
@@ -79,9 +80,6 @@ export default defineComponent({
                 //     }
                 console.log(errs)
             })
-            if(!errors.value) {
-                document.body.style.backgroundImage = "";
-            }
         }
         return { 
             handleClickLogin,

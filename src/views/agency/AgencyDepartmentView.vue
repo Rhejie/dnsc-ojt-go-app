@@ -30,18 +30,10 @@
         </div>
         <div class="mt-2 md:flex md:items-center md:justify-between">
             <div class="flex-1 min-w-0">
-                <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Manage Agencies</h2>
+                <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Manage Departments</h2>
             </div>
             <div class="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
-                <el-button @click="list = true" v-if="agenciesData.length > 0" type="warning">
-                    <ViewListIcon class="flex-shrink-0 h-5 w-5 text-gray" aria-hidden="true" /> List
-                </el-button>
-                <el-button v-if="agenciesData.length > 0" @click="list = false" type="warning">
-                    <LocationMarkerIcon class="flex-shrink-0 h-5 w-5 text-gray" aria-hidden="true" /> Map
-                </el-button>
-                <el-button @click="handleCreateAgency" type="primary">
-                    <PlusIcon class="flex-shrink-0 h-5 w-5 text-white" aria-hidden="true" /> New
-                </el-button>
+                <el-button @click="handleCreateDepartment" type="primary"> <plus-icon class="flex-shrink-0 h-5 w-5 text-white" aria-hidden="true" /> New</el-button>
             </div>
         </div>
     </div>
@@ -56,11 +48,12 @@
                                 placeholder="Search Agencies..." autocomplete="given-name"
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                         </div>
-                        <el-table :data="agenciesData" v-loading="loading" size="large" style="width: 100%" v-if="list">
+                        <el-table :data="departmentsData" v-loading="loading" size="large" style="width: 100%">
                             <el-table-column prop="name" label="Name" sortable />
-                            <el-table-column prop="address" label="Address" sortable />
-                            <el-table-column prop="latitude" label="Latitude" sortable />
-                            <el-table-column prop="longitude" label="Longitude" sortable />
+                            <el-table-column prop="head" label="Head" sortable />
+                            <el-table-column prop="phone_number" label="Phone Number" sortable />
+                            <el-table-column prop="agency.name" label="Agency" sortable />
+                            <el-table-column prop="description" label="Description" sortable />
                             <el-table-column fixed="right" label="Actions" width="120">
                                 <template #default="scope">
                                     <el-button link type="primary" @click="handleClickEdit(scope.row)" size="small">
@@ -73,7 +66,6 @@
                                 </template>
                             </el-table-column>
                         </el-table>
-                        <maps-component :areas="agenciesData" v-else />
                         <g-pagination :page_size="currentPageSize" :current_size="total" :current_page="currentPage" />
                     </div>
                 </div>
@@ -86,13 +78,12 @@
 import { setActiveNav } from "@/composables/setActiveNavigation";
 import { defineComponent, onMounted, ref } from "vue";
 import GPagination from "@/components/GPagination.vue";
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, PencilAltIcon, TrashIcon, LocationMarkerIcon, ViewListIcon } from '@heroicons/vue/solid'
+import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, PencilAltIcon, TrashIcon } from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
-import { getAgencies } from "@/composables/agency_service";
-import MapsComponent from "@/components/map/MapsComponent.vue";
+import {getDeparments} from "@/composables/agency_department_service"
 
 export default defineComponent({
-    name: 'AgencyView',
+    name: 'AgencyDepartmentView',
     components: {
         ChevronLeftIcon,
         ChevronRightIcon,
@@ -100,9 +91,6 @@ export default defineComponent({
         GPagination,
         PencilAltIcon,
         TrashIcon,
-        LocationMarkerIcon,
-        ViewListIcon,
-        MapsComponent
     },
     setup() {
         const router = useRouter()
@@ -110,57 +98,55 @@ export default defineComponent({
         const currentPageSize = ref(10);
         const currentPage = ref(1);
         const search = ref("")
-        const agenciesData = ref([])
-        const list = ref(true)
+
+        const departmentsData = ref([]);
         const loading = ref(true);
+
         const handleEnterSearch = () => {
 
         }
 
-        const handleCreateAgency = () => {
-            router.push({ name: 'Create Agency' })
+        const handleCreateDepartment = () => {
+            router.push({name: 'Create Department'})
         }
 
-        const handleClickEdit = (agency) => {
-            router.push({ name: 'Update Agency', params: { id: agency.id } })
+        const handleClickEdit = (department) => {
+            router.push({name: 'Update Department', params: {id: department.id}})
         }
 
         const handleClickDelete = () => {
 
         }
-
         const handleFetchAgency = async () => {
             let params = {
                 current_size: currentPageSize.value,
                 current_page: currentPage.value,
                 search: search.value,
             }
-            const { loadAgencies, agencies, loadingAgencies, totalAgencies } = getAgencies(params)
-            await loadAgencies()
-            loading.value = loadingAgencies.value
-            agenciesData.value = agencies.value
-            total.value = totalAgencies.value
+            const {loadDepartments, departments, loadingDepartments, totalDepartments} = getDeparments(params)
+            await loadDepartments()
+            
+            departmentsData.value = departments.value,
+            loading.value = loadingDepartments.value
+            total.value = totalDepartments.value
 
         }
 
-        onMounted(() => {
-            setActiveNav('Agencies')
-
-            handleFetchAgency()
+        onMounted( async () => {
+            setActiveNav('Departments')
+            await handleFetchAgency()
         })
-
         return {
+            departmentsData,
+            loading,
             handleEnterSearch,
-            handleCreateAgency,
+            handleCreateDepartment,
             handleClickEdit,
             handleClickDelete,
-            loading,
-            agenciesData,
             search,
             total,
             currentPage,
             currentPageSize,
-            list
         }
     }
 })

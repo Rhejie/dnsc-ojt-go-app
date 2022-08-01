@@ -19,10 +19,8 @@
                     <li>
                         <div class="flex items-center">
                             <ChevronRightIcon class="flex-shrink-0 h-5 w-5 text-gray-400" aria-hidden="true" />
-                            <router-link to="/courses" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                                Courses
+                            <router-link to="/users" class="text-sm font-medium text-gray-500 hover:text-gray-700">Users
                             </router-link>
-
                         </div>
                     </li>
                 </ol>
@@ -30,19 +28,12 @@
         </div>
         <div class="mt-2 md:flex md:items-center md:justify-between">
             <div class="flex-1 min-w-0">
-                <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Manage Agencies</h2>
+                <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Manage Requirements</h2>
             </div>
             <div class="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
-                <el-button @click="list = true" v-if="agenciesData.length > 0" type="warning">
-                    <ViewListIcon class="flex-shrink-0 h-5 w-5 text-gray" aria-hidden="true" /> List
-                </el-button>
-                <el-button v-if="agenciesData.length > 0" @click="list = false" type="warning">
-                    <LocationMarkerIcon class="flex-shrink-0 h-5 w-5 text-gray" aria-hidden="true" /> Map
-                </el-button>
-                <el-button @click="handleCreateAgency" type="primary">
-                    <PlusIcon class="flex-shrink-0 h-5 w-5 text-white" aria-hidden="true" /> New
-                </el-button>
+                <el-button type="primary" @click="handleCreate">Add Requirements</el-button>
             </div>
+            
         </div>
     </div>
     <main>
@@ -50,17 +41,15 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                 <!-- Replace with your content -->
                 <div class="py-4">
-                    <div class="shadow-xl rounded-lg p-5 border">
+                    <div class=" shadow-xl rounded-lg p-5 border">
                         <div class="w-2/5">
                             <input type="text" v-model="search" @keyup.enter="handleEnterSearch"
-                                placeholder="Search Agencies..." autocomplete="given-name"
+                                placeholder="Search Institute..." autocomplete="given-name"
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                         </div>
-                        <el-table :data="agenciesData" v-loading="loading" size="large" style="width: 100%" v-if="list">
+                        <el-table :data="requirements" v-loading="loadingRequirements" size="large" style="width: 100%">
                             <el-table-column prop="name" label="Name" sortable />
-                            <el-table-column prop="address" label="Address" sortable />
-                            <el-table-column prop="latitude" label="Latitude" sortable />
-                            <el-table-column prop="longitude" label="Longitude" sortable />
+                            <el-table-column prop="description" label="Description" sortable/>
                             <el-table-column fixed="right" label="Actions" width="120">
                                 <template #default="scope">
                                     <el-button link type="primary" @click="handleClickEdit(scope.row)" size="small">
@@ -73,7 +62,6 @@
                                 </template>
                             </el-table-column>
                         </el-table>
-                        <maps-component :areas="agenciesData" v-else />
                         <g-pagination :page_size="currentPageSize" :current_size="total" :current_page="currentPage" />
                     </div>
                 </div>
@@ -85,82 +73,64 @@
 <script>
 import { setActiveNav } from "@/composables/setActiveNavigation";
 import { defineComponent, onMounted, ref } from "vue";
-import GPagination from "@/components/GPagination.vue";
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, PencilAltIcon, TrashIcon, LocationMarkerIcon, ViewListIcon } from '@heroicons/vue/solid'
 import { useRouter } from "vue-router";
-import { getAgencies } from "@/composables/agency_service";
-import MapsComponent from "@/components/map/MapsComponent.vue";
+import { ChevronLeftIcon, ChevronRightIcon, PencilAltIcon, TrashIcon} from '@heroicons/vue/solid'
+import { getRequirements } from "@/composables/courses/requirement_service";
+import GPagination from "@/components/GPagination.vue";
 
 export default defineComponent({
-    name: 'AgencyView',
+    name: 'RequirementView',
     components: {
         ChevronLeftIcon,
         ChevronRightIcon,
-        PlusIcon,
-        GPagination,
         PencilAltIcon,
         TrashIcon,
-        LocationMarkerIcon,
-        ViewListIcon,
-        MapsComponent
+        GPagination
     },
     setup() {
-        const router = useRouter()
-        const total = ref(0)
-        const currentPageSize = ref(10);
+
+        const router = useRouter();
         const currentPage = ref(1);
-        const search = ref("")
-        const agenciesData = ref([])
-        const list = ref(true)
-        const loading = ref(true);
+        const currentPageSize = ref(10);
+        const search = ref('')
+        const total = ref(0);
+
+        
+        const params = ref({
+            current_page: currentPage.value,
+            current_size : currentPageSize.value,
+            search: search.value
+        })
+
+        const {loadRequirements, requirements, loadingRequirements} = getRequirements(params.value);
+
+        const handleCreate = () => {
+            router.push({name: 'Create Requirement Form'})
+        }
+
         const handleEnterSearch = () => {
 
         }
 
-        const handleCreateAgency = () => {
-            router.push({ name: 'Create Agency' })
+        const handleClickEdit = (requirement) => {
+            router.push({name: 'Update Requirement Form', params: {id: requirement.id}})
         }
 
-        const handleClickEdit = (agency) => {
-            router.push({ name: 'Update Agency', params: { id: agency.id } })
-        }
-
-        const handleClickDelete = () => {
-
-        }
-
-        const handleFetchAgency = async () => {
-            let params = {
-                current_size: currentPageSize.value,
-                current_page: currentPage.value,
-                search: search.value,
-            }
-            const { loadAgencies, agencies, loadingAgencies, totalAgencies } = getAgencies(params)
-            await loadAgencies()
-            loading.value = loadingAgencies.value
-            agenciesData.value = agencies.value
-            total.value = totalAgencies.value
-
-        }
-
-        onMounted(() => {
-            setActiveNav('Agencies')
-
-            handleFetchAgency()
+        onMounted( async () => {
+            await loadRequirements();
+            setActiveNav('Requiremnets')
         })
 
         return {
-            handleEnterSearch,
-            handleCreateAgency,
-            handleClickEdit,
-            handleClickDelete,
-            loading,
-            agenciesData,
-            search,
-            total,
+            handleCreate,
+            requirements,
+            loadingRequirements,
             currentPage,
             currentPageSize,
-            list
+            total,
+            search,
+            handleEnterSearch,
+            handleClickEdit
         }
     }
 })

@@ -1,5 +1,5 @@
-<template>
-  <router-view/>
+<template> 
+  <router-view class="bg-gray-200 h-screen"/>
 </template>
 <script>
 import { defineComponent, onMounted } from "vue";
@@ -19,5 +19,5 @@ export default defineComponent({
 })
 </script>
 <style>
-
+  
 </style>

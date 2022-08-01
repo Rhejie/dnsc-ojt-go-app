@@ -47,133 +47,113 @@
         <div class="py-6">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                 <!-- Replace with your content -->
-                <div class="py-4">
-                    <div class=" shadow-xl rounded-lg h-96">
-                        <form action="#" method="POST">
-                            <div class="shadow sm:rounded-md sm:overflow-hidden">
-                                <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
-                                    <div>
-                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Personal Information
-                                        </h3>
-                                        <p class="mt-1 text-sm text-gray-500">Use a permanent address where you can
-                                            recieve mail.</p>
-                                    </div>
-
-                                    <div class="grid grid-cols-6 gap-6">
-                                        <div class="col-span-6">
-                                            <label for="Role"
-                                                class="block text-sm font-medium text-gray-700">Role</label>
-                                            <select id="role" :disabled="formType != 'new' ? true : false" @change="changeRole"
-                                                v-model="user.role_id" name="role" autocomplete="role-name"
-                                                class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                                <option v-for="role in roles" :key="role.id" :value="role.id">
-                                                    {{ role.name }}</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-span-6 sm:col-span-2">
-                                            <label for="first-name"
-                                                class="block text-sm font-medium text-gray-700">First name</label>
-                                            <input type="text" name="first-name" v-model = "user.firstname" id="first-name"
-                                                autocomplete="given-name"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-
-                                        <div class="col-span-6 sm:col-span-2">
-                                            <label for="last-name"
-                                                class="block text-sm font-medium text-gray-700">Middle
-                                                name</label>
-                                            <input type="text" name="last-name" v-model = "user.middlename" id="last-name"
-                                                autocomplete="family-name"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-                                        <div class="col-span-6 sm:col-span-2">
-                                            <label for="last-name" class="block text-sm font-medium text-gray-700">Last
-                                                name</label>
-                                            <input type="text" v-model = "user.lastname" name="last-name" id="last-name"
-                                                autocomplete="family-name"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-                                        <div class="col-span-1 sm:col-span-1">
-                                            <label for="last-name" class="block text-sm font-medium text-gray-700">Suffix</label>
-                                            <input type="text" name="last-name" v-model = "user.suffix" id="last-name"
-                                                autocomplete="family-name"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-
-                                        <div class="col-span-2 sm:col-span-2">
-                                            <label for="gender"
-                                                class="block text-sm font-medium text-gray-700">Gender</label>
-                                            <select id="gender" v-model="user.gender" name="gender" autocomplete="gender-name" class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                                <option value="female">Female</option>
-                                                <option value="male">Male</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-span-2 sm:col-span-2">
-                                            <label for="phone_number" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                                            <input type="text" v-model="user.phone_number" name="phone_number" id="phone_number"
-                                                autocomplete="phone_number"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-                                        <div class="col-span-6 sm:col-span-6">
-                                            <label for="last-name" class="block text-sm font-medium text-gray-700">Address</label>
-                                            <textarea type="textarea" v-model = "user.address" name="last-name" id="last-name"
-                                                autocomplete="family-name"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-
-                                        <div class="col-span-2 sm:col-span-2">
-                                            <label for="email-address"
-                                                class="block text-sm font-medium text-gray-700">Email address</label>
-                                            <input type="text" v-model = "user.email" name="email-address" id="email-address"
-                                                autocomplete="email"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-                                        <div class="col-span-2 sm:col-span-2">
-                                            <label for="password"
-                                                class="block text-sm font-medium text-gray-700">Password</label>
-                                            <input type="password" v-model = "user.password" name="password" id="password"
-                                                autocomplete="password"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-
-                                        <div class="col-span-6 sm:col-span-3" v-if="user.role_id == 2">
-                                            <label for="institute"
-                                                class="block text-sm font-medium text-gray-700">Institute</label>
-                                            <select id="institute" v-model="user.institute_id" v-loading="loadingIns" name="institute"
-                                                autocomplete="institute-name"
-                                                class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                                <option v-for="institute in institutesData" :key="institute.id" :value="institute.id">
-                                                    {{ institute.name }} - {{ institute.abbreviation }}</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-span-6 sm:col-span-3" v-if="user.role_id == 3 || user.role_id == 5">
-                                            <label for="course"
-                                                class="block text-sm font-medium text-gray-700">Course</label>
-                                            <select id="course" v-model="user.institute_id" v-loading="loadingIns" name="course"
-                                                autocomplete="course-name"
-                                                class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                                <option v-for="course in coursesData" :key="course.id" :value="course.id">
-                                                    {{ course.name }} - {{ course.abbreviation }}</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-span-2 sm:col-span-2" v-if="user.role_id == 5">
-                                            <label for="password"
-                                                class="block text-sm font-medium text-gray-700">Student ID</label>
-                                            <input type="text" name="password" id="password"
-                                                autocomplete="password"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                                    <button type="button" @click="handleClickCancel"
-                                        class="bg-indigo-600 mr-2 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</button>
-                                    <button type="submit"
-                                        class="bg-emerald-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">Save</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                <div class="">
+                    <el-card shadow="always">
+                        <div class="pb-4">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">User Information</h3>
+                        </div>
+                        <el-form ref="ruleFormRef" :model="form" :rules="rules" label-width="120px"
+                            class="demo-ruleForm" :size="formSize" status-icon>
+                            <el-row>
+                                <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+                                    <el-row>
+                                        <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+                                            <el-form-item label="Role" prop="role_id">
+                                                <el-select v-model="form.role_id" :disabled="formType != 'new'"
+                                                    placeholder="Role">
+                                                    <el-option v-for="role in roles" :key="role.id" :label="role.name"
+                                                        :value="role.id" />
+                                                </el-select>
+                                            </el-form-item>
+                                        </el-col>
+                                        <!-- <el-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10"
+                                            v-if="form.role_id == 3 || form.role_id == 5">
+                                            <el-form-item label="Course" prop="course_id">
+                                                <el-select-v2 size="large" v-model="form.course_id" style="width: 100%"
+                                                    filterable remote :remote-method="searchCourse" clearable
+                                                    :options="coursesData" :loading="loadingCourse"
+                                                    placeholder="Please course" />
+                                            </el-form-item>
+                                        </el-col> -->
+                                        <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8" v-if="form.role_id == 5">
+                                            <el-form-item label="Student ID" prop="student_id">
+                                                <el-input v-model="form.student_id" size="large" />
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8" v-if="form.role_id == 2">
+                                            <el-form-item label="Institute" prop="institute_id">
+                                                <el-select-v2 size="large" v-model="form.institute_id"
+                                                    style="width: 400px" filterable remote
+                                                    :remote-method="searchInstitute" clearable :options="institutesData"
+                                                    :loading="loading" placeholder="Please course" />
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8" v-if="form.role_id == 4">
+                                            <el-form-item label="Department" prop="agency_department_id">
+                                                <el-select-v2 size="large" v-model="form.agency_deparment_id"
+                                                    style="width: 400px" filterable remote
+                                                    :remote-method="searchDepartment" clearable
+                                                    :options="departmentsData" :loading="loadingDepartments"
+                                                    placeholder="Please course" />
+                                            </el-form-item>
+                                        </el-col>
+                                    </el-row>
+                                </el-col>
+                                <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+                                    <el-form-item label="First Name" prop="firstname">
+                                        <el-input v-model="form.firstname" size="large" />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+                                    <el-form-item label="Middle Name" prop="middlename">
+                                        <el-input v-model="form.middlename" size="large" />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+                                    <el-form-item label="Last Name" prop="lastname">
+                                        <el-input v-model="form.lastname" size="large" />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :xs="24" :sm="24" :md="8" :lg="4" :xl="4">
+                                    <el-form-item label="Suffix" prop="suffix">
+                                        <el-input v-model="form.suffix" size="large" />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+                                    <el-form-item label="Gender" prop="gender">
+                                        <el-select v-model="form.gender" placeholder="Gender">
+                                            <el-option label="Female" value="female" />
+                                            <el-option label="Male" value="male" />
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+                                    <el-form-item label="Phone Number" prop="phone_number">
+                                        <el-input v-model="form.phone_number" size="large" />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+                                    <el-form-item label="Address" prop="address">
+                                        <el-input v-model="form.address" type="textarea" size="large" />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
+                                    <el-form-item label="Email" prop="email">
+                                        <el-input v-model="form.email" size="large" />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+                                    <el-form-item label="Password" prop="password">
+                                        <el-input v-model="form.password" type="password" size="large" />
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-form-item>
+                                <el-button type="primary" @click="submitForm(ruleFormRef)">Create</el-button>
+                                <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </el-card>
                 </div>
                 <!-- /End replace -->
             </div>
@@ -181,11 +161,12 @@
     </main>
 </template>
 <script>
-import { getInstitutes, getRoles, getCourses } from "@/composables/admin_data";
+import { getInstitutes, getRoles, getCourses, getDepartments } from "@/composables/admin_data";
 import { setActiveNav } from "@/composables/setActiveNavigation";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
-import {  defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+import {saveUser} from "@/composables/user_service"
 
 export default defineComponent({
     name: 'CreateUserView',
@@ -204,7 +185,9 @@ export default defineComponent({
 
         const router = useRouter()
 
-        const user = ref({
+        const formSize = ref('large')
+        const ruleFormRef = ref()
+        const form = ref({
             firstname: '',
             lastname: '',
             middlename: '',
@@ -222,6 +205,57 @@ export default defineComponent({
             agency_department_id: '',
         })
 
+        const rules = reactive({
+            firstname: [
+                { required: true, message: 'Please input first name', trigger: 'blur' },
+            ],
+            lastname: [
+                { required: true, message: 'Please input last name', trigger: 'blur' },
+            ],
+            middlename: [
+                { required: true, message: 'Please input middle name', trigger: 'blur' },
+            ],
+            role_id: [
+                { required: true, message: 'Please select role', trigger: 'blur' },
+            ],
+            gender: [
+                { required: true, message: 'Please select gender', trigger: 'blur' },
+            ],
+            phone_number: [
+                { required: true, message: 'Please input phone number', trigger: 'blur' },
+            ],
+            address: [
+                { required: true, message: 'Please input address', trigger: 'blur' },
+            ],
+            email: [
+                {
+                    required: true, message: 'Please input email', trigger: 'blur'
+                },
+                {
+                    type: 'email',
+                    message: 'Please input correct email address',
+                    trigger: ['blur', 'change'],
+                },
+            ],
+            password: [ 
+                {required: true, message: 'Please input password', trigger: 'blur'},
+                { min: 6, max: 10, message: 'Length should be 6 to 10', trigger: 'blur' },
+            ],
+            
+            student_id: [ 
+                {required: true, message: 'Please input student id', trigger: 'blur'},
+            ],
+            institute_id: [ 
+                {required: true, message: 'Please select institute', trigger: 'blur'},
+            ],
+            course_id: [ 
+                {required: true, message: 'Please select course', trigger: 'blur'},
+            ],
+            agency_department_id: [
+                {required: true, message: 'Please select department', trigger: 'blur'},
+            ]
+        })
+
         const { loadingRoles, loadRoles, roles } = getRoles();
 
         loadRoles();
@@ -231,34 +265,118 @@ export default defineComponent({
         const institutesData = ref([])
 
         const coursesData = ref([])
-        
+
+        const departmentsData = ref([])
+
+        const loading = ref(false);
+
 
         const handleClickCancel = () => {
             router.go(-1)
         }
 
         const changeRole = async (event) => {
-            let role = event.target.value; 
-            if(role == 2) {
-                const { loadInstitutes, institutes } = getInstitutes()
-                await loadInstitutes()
-                institutesData.value = institutes.value
+            let role = event.target.value;
+            console.log(role)
+        }
+
+        const submitForm = async (formEl) => {
+            if (!formEl) return
+            await formEl.validate((valid, fields) => {
+                if (valid) {
+                    handleSave()
+                } else {
+                    console.log('error submit!', fields)
+                }
+            })
+        }
+
+        const handleSave = async () => {
+            loading.value = true
+            const {save, response, errorUser, loadingUser} = saveUser(form.value);
+            await save()
+            if(errorUser.value) {
+                return
             }
-            else if (role == 3 || role == 5) {
-                const {loadCourses, courses} = getCourses()
-                await loadCourses()
-                coursesData.value = courses.value
+            loading.value = loadingUser.value
+            form.value = response.value
+            router.push('/users')
+        }
+
+        const resetForm = (formEl) => {
+            if (!formEl) return
+            formEl.resetFields()
+        }
+
+
+        const loadingCourse = ref(true)
+        const loadingInstitute = ref(true)
+        const loadingDepartments = ref(true)
+
+        const searchInstitute = async (query) => {
+            if (query !== '') {
+                loadingInstitute.value = true
+                const { loadInstitutes, institutes } = getInstitutes(query)
+                await loadInstitutes()
+                institutesData.value = institutes.value.map(institute => {
+                    institute.label = institute.name;
+                    institute.value = institute.id
+                    return institute
+                })
+                loadingInstitute.value = false
+            } else {
+                institutesData.value = []
             }
         }
-        
+
+        const searchDepartment = async (query) => {
+            if (query !== '') {
+                loadingDepartments.value = true
+                const { loadDepartmentsData, departments } = getDepartments(query)
+                await loadDepartmentsData()
+                departmentsData.value = departments.value.map(department => {
+                    department.label = department.name + ` - ( ${department.agency.name})`;
+                    department.value = department.id
+                    return department
+                })
+                loadingDepartments.value = false
+            } else {
+                departmentsData.value = []
+            }
+        }
+
+        const searchCourse = async (query) => {
+            if (query !== '') {
+                loadingCourse.value = true
+                const { loadCourses, courses } = getCourses(query)
+                await loadCourses()
+                coursesData.value = courses.value.map(course => {
+                    course.label = course.name + ` - ( ${course.institute.abbreviation} )`;
+                    course.value = course.id
+                    return course
+                })
+                loadingCourse.value = false
+            } else {
+                coursesData.value = []
+            }
+        }
+
 
         onMounted(async () => {
             setActiveNav('Users')
             if (props.formType && typeof props.formType != undefined) {
                 if (props.formType == 'institute') {
-                    user.value.role_id = 2
+                    form.value.role_id = 2
                 }
-
+                if (props.formType == 'course') {
+                    form.value.role_id = 3
+                }
+                if (props.formType == 'student') {
+                    form.value.role_id = 5
+                }
+                if (props.formType == 'supervisor') {
+                    form.value.role_id = 4
+                }
             }
 
         });
@@ -267,11 +385,22 @@ export default defineComponent({
             roles,
             loadingRoles,
             handleClickCancel,
-            user,
             loadingIns,
             institutesData,
             changeRole,
-            coursesData
+            coursesData,
+            formSize,
+            ruleFormRef,
+            form,
+            rules,
+            submitForm,
+            resetForm,
+            searchCourse,
+            loadingCourse,
+            searchInstitute,
+            searchDepartment,
+            loadingDepartments,
+            departmentsData
         }
     }
 });
